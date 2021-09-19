@@ -14,4 +14,9 @@ public class BotConfig {
         return new TelegramBot(botProperties, updateHandler);
     }
 
+    @Bean
+    public BotProperties botProperties() {
+        return new BotProperties();
+    }
+
 }

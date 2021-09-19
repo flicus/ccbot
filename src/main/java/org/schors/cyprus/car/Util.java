@@ -5,13 +5,35 @@ import lombok.NoArgsConstructor;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.User;
 
+import java.util.Collection;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 import static java.util.Objects.nonNull;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class Util {
+
+    public static boolean isInline(Map question) {
+        return question.containsKey("answer") || question.containsKey("answers");
+    }
+
+    public static boolean isSingle(Map question) {
+        return question.containsKey("answer");
+    }
+
+    public static <T> Stream<Stream<T>> getTuples(Collection<T> items, int size) {
+        int page = 0;
+        Stream.Builder<Stream<T>> builder = Stream.builder();
+        Stream<T> stream;
+        do {
+            stream = items.stream().skip(size * page++).limit(size);
+            builder.add(stream);
+        } while (items.size() - size * page > 0);
+        return builder.build();
+    }
 
     public static Optional<User> getUser(final Update update) {
         if (update == null)

@@ -5,8 +5,18 @@ import org.slyrack.telegrambots.annotations.MiddleHandler;
 import org.slyrack.telegrambots.session.Session;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 @Controller
 public class SessionConfigurer {
+
+    private final BotProperties botProperties;
+
+    public SessionConfigurer(BotProperties botProperties) {
+        this.botProperties = botProperties;
+    }
 
     @MiddleHandler
     public void configureSession(final Update update, final Session session) {
@@ -19,6 +29,32 @@ public class SessionConfigurer {
         if (!session.containsAttribute("user"))
             Util.getUser(update)
                     .ifPresent(user -> session.setAttribute("user", user));
+
+        if (!session.containsAttribute("questions")) {
+            List<Map> questions = new ArrayList<>();
+            questions.addAll(botProperties.getQuestions());
+            session.setAttribute("questions", questions);
+        }
+
+        if (!session.containsAttribute("answers")) {
+            session.setAttribute("answers", new ArrayList<Answer>());
+        }
+
+        if (!session.containsAttribute("farewell")) {
+            session.setAttribute("farewell", botProperties.getFarewell());
+        }
+
+        if (!session.containsAttribute("greeting")) {
+            session.setAttribute("greeting", botProperties.getGreeting());
+        }
+
+        if (!session.containsAttribute("cancel")) {
+            session.setAttribute("cancel", botProperties.getCancel());
+        }
+
+        if (!session.containsAttribute("admins")) {
+            session.setAttribute("admins", botProperties.getAdmins());
+        }
 
     }
 }
