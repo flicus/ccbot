@@ -174,8 +174,8 @@ public class InitViews {
                      @SessionAtr("chat-id") String chatId,
                      @SessionAtr("greeting") String greeting) {
         logger.debug("help");
+        sender.execute(SendMessage.builder().text(greeting + "\nBot development: @flicus").chatId(chatId).build());
 
-        sender.execute(SendMessage.builder().text(greeting).chatId(chatId).build());
     }
 
 

@@ -103,8 +103,8 @@ public class InitController {
                 .build());
 
         if (Util.isSingle(question)) {
-            modifyQuestion(question, absSender, update, chatId);
             answer.getAnswers().add(update.getCallbackQuery().getData());
+            modifyQuestion(question, absSender, update, chatId, answer);
             session.setAttribute("currentAnswer", null);
             return getModelAndView(session, questions);
         } else {
@@ -112,23 +112,27 @@ public class InitController {
                 session.setAttribute("currentAnswer", null);
                 return getModelAndView(session, questions);
             } else {
-                modifyQuestion(question, absSender, update, chatId);
-                answer.getAnswers().add(update.getCallbackQuery().getData());
+                if (answer.getAnswers().contains(update.getCallbackQuery().getData())) {
+                    answer.getAnswers().remove(update.getCallbackQuery().getData());
+                } else {
+                    answer.getAnswers().add(update.getCallbackQuery().getData());
+                }
+                modifyQuestion(question, absSender, update, chatId, answer);
                 return new StatefulModelAndView("inline-answer-state", "none");
             }
         }
     }
 
     @SneakyThrows
-    private void modifyQuestion(Map question, AbsSender sender, Update update, String chatId) {
+    private void modifyQuestion(Map question, AbsSender sender, Update update, String chatId, Answer answer) {
+        StringBuilder newMessage = new StringBuilder();
+        newMessage.append(answer.getQuestion()).append("\n<b>");
+        answer.getAnswers().forEach(s -> newMessage.append(s).append(" "));
+        newMessage.append("</b>");
 
-        String oldMessage = update.getCallbackQuery().getMessage().getText();
-        String newMessage = oldMessage.contains("\n")
-                ? oldMessage + ", <b>" + update.getCallbackQuery().getData() + "</b>"
-                : oldMessage + "\n<b>" + update.getCallbackQuery().getData() + "</b>";
         sender.execute(EditMessageText.builder()
                 .parseMode(ParseMode.HTML)
-                .text(newMessage)
+                .text(newMessage.toString())
                 .chatId(chatId)
                 .messageId(update.getCallbackQuery().getMessage().getMessageId())
                 .build());
