@@ -18,4 +18,5 @@ public class BotProperties {
     private String username;
     private String token;
     private String cancel;
+    private boolean debug;
 }

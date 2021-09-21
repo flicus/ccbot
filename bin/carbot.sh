@@ -1,0 +1,1 @@
+java -jar cyprus-car-bot.jar --spring.config.location=config/*/
