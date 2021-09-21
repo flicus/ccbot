@@ -177,6 +177,4 @@ public class InitViews {
         sender.execute(SendMessage.builder().text(greeting + "\nBot development: @flicus").chatId(chatId).build());
 
     }
-
-
 }
