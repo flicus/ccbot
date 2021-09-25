@@ -1,11 +1,20 @@
 FROM openjdk:11
 
-RUN mkdir "/usr/app" && mkdir "/usr/app/config" && mkdir "/usr/app/logs"
+ARG NAME=name
+ARG TOKEN=token
 
-COPY target/cyprus-car-bot-1.0-SNAPSHOT.jar /usr/app
-COPY bin/carbot.sh /usr/app
-COPY src/main/resources/application.local.yaml /usr/app/config
-
+RUN mkdir "/usr/app" mkdir "/usr/app/config" && mkdir "/usr/app/logs"
 WORKDIR /usr/app
 
-ENTRYPOINT ["java", "-jar", "cyprus-car-bot-1.0-SNAPSHOT.jar", "--spring.config.location=/usr/app/config/*/"]
+COPY gradle /usr/app/gradle
+COPY src /usr/app/src
+COPY build.gradle /usr/app
+COPY gradlew /usr/app
+COPY settings.gradle /usr/app
+COPY src/main/resources/application.yaml /usr/app/config
+RUN cd /usr/app && chmod +x gradlew && ./gradlew build
+
+ENTRYPOINT ["java", "-jar", "/usr/app/build/libs/carbot-0.0.1.jar",\
+    "--spring.config.location=/usr/app/config/*/",\
+    "--cyprus.car.bot.name=${NAME}",\
+    "--cyprus.car.bot.token=${TOKEN}"]

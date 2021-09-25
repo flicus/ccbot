@@ -33,8 +33,7 @@ cyprus.car.bot:
   username: name
   token: token
   admins:
-    - admin1
-    - admin2
+    - flicus
 
 slyrack:
   enable-state-management: true
